@@ -1,1 +1,3 @@
-# MAKU - A code generator for Bullet Hell games.
+# MAKU 
+
+A code generator for Bullet Hell games.
