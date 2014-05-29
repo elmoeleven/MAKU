@@ -1,5 +1,7 @@
 module DAST where
 
+data NEList a = NEList a [a] deriving (Show)
+
 data Game = Game {
   getGrid :: Grid,
   getElements :: Elements,
@@ -61,8 +63,6 @@ data Timestamp = Timestamp {
   getDuration :: Maybe Duration
 } deriving (Show)
 
-data NEList a = NEList a [a] deriving (Show)
-
 data Elements = Elements {
   getBullets :: [Bullet],
   getAntags :: NEList Antag,
@@ -85,17 +85,17 @@ data Antag = Antag {
 } deriving (Show)
 
 data TurretType = Traditional {
-  getTMainTurret  :: Maybe Turret,
-  getTLeftTurret  :: Maybe Turret,
-  getTRightTurret  :: Maybe Turret
+  getTMainTurret  :: Turret,
+  getTLeftTurret  :: Turret,
+  getTRightTurret  :: Turret
 } | Double {
-  getDLeftTurret :: Maybe Turret,
-  getDRightTurret :: Maybe Turret
+  getDLeftTurret :: Turret,
+  getDRightTurret :: Turret
 } | Quad {
-  getQLeftBottom :: Maybe Turret,
-  getQRightBottom :: Maybe Turret,
-  getQLeftTop :: Maybe Turret,
-  getQRightTop :: Maybe Turret
+  getQLeftBottom :: Turret,
+  getQRightBottom :: Turret,
+  getQLeftTop :: Turret,
+  getQRightTop :: Turret
 } deriving (Show)
 
 
@@ -108,7 +108,7 @@ data Upgrades = Upgrades {
 
 data ShotUpgrade = ShotUpgrade {
   getShotUpgradeName :: String,
-  getShotTurret :: Maybe Turret
+  getShotTurret :: Turret
 } deriving (Show)
 
 data Bullet = Bullet {
@@ -137,7 +137,7 @@ data Shield = Shield {
 
 data Shot = Shot {
   getBullet :: String,
-  getType :: ShotType
+  getType   :: ShotType
 } deriving (Show)
 
 data Bomb = Bomb {
@@ -154,7 +154,7 @@ data Life = Life {
 data LifeType = Add | Mult deriving (Show)
 data LifeCount = Countable Nat | Infinite deriving (Show)
 
-data Turret = TM (Maybe Shot) | TL (Maybe Shot) | TR (Maybe Shot) | BR (Maybe Shot) | BL (Maybe Shot) deriving (Show)
+data Turret = TM Shot | TL Shot | TR Shot | BR Shot | BL Shot deriving (Show)
 data WinCondition = Boss String | Score Nat | Time Nat deriving (Show)
 data ShotType = ShotType Nat deriving (Show)
 data Movement = Movement {

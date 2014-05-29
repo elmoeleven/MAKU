@@ -107,9 +107,7 @@ ipInvalidError r c = unexpected ("--> initial position error, row: " ++ r ++ ", 
 indented :: Show tok => SourcePos -> P.ParsecT [tok] u Data.Functor.Identity.Identity [a]
 indented p = (eof >> return []) <|> do
   innerPos <- getPosition
-  case (sourceColumn p) == (sourceColumn innerPos) of
-    True -> pzero
-    False -> return $ []
+  if sameIndent p innerPos then pzero else return []
 
 -- options
 options :: [(String,a)] -> Parser a
@@ -119,10 +117,7 @@ options l = choice $ map (\(s,r) -> do { _ <- string s; return r }) l
 inline :: SourcePos -> P.ParsecT [tok] u Identity [a]
 inline p = do
   a <- getPosition
-  if (sourceColumn p) == (sourceColumn a) then
-    return []
-  else
-    pzero
+  if sameIndent a p then return [] else pzero
 
 -- check for same indent
 sameIndent :: SourcePos -> SourcePos -> Bool

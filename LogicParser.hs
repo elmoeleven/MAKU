@@ -75,11 +75,10 @@ logic b a d u = do
   l <- levels b (timelineNames r g s u) (singleNames s)
   return $ DAST.Logic r s g l
 
-
 lifeCount :: Parser DAST.LifeCount
 lifeCount = try $ do
   l <- lifeNum <|> infinite
-  return $ l
+  return l
 
 lifeNum :: Parser DAST.LifeCount
 lifeNum = try $ do
@@ -90,7 +89,7 @@ infinite :: Parser DAST.LifeCount
 infinite = try $ do
   reserved "lives"
   reserved "infinite"
-  return $ DAST.Infinite
+  return DAST.Infinite
 
 bombs :: Parser DAST.Nat
 bombs = readNat "bombs"
@@ -105,7 +104,7 @@ randoms :: [String] -> Parser [DAST.Random]
 randoms a = try $ do
   r <- many $ random a
   spaces
-  return $ r
+  return r
 
 random :: [String] -> Parser DAST.Random
 random a = try $ do
@@ -133,7 +132,7 @@ side = try $ do
     ("top", DAST.TopSide),
     ("bottom", DAST.BottomSide)]
   spaces
-  return $ s
+  return s
 
 wait :: Parser DAST.Nat
 wait = readNat "wait"
@@ -197,13 +196,13 @@ protag q = try $ do
   _  <- indented sP       -- set indent
   nP <- getPosition -- new position
   if greaterIndent sP nP
-  then return $ Nothing
+  then return Nothing
   else do
     clr <- color
     _   <- inline nP         -- preserve indent
     x   <- mt nP q
-    y   <- option (Just $ DAST.TL Nothing) (lt nP q)
-    z   <- option (Just $ DAST.TR Nothing) (rt nP q)
+    y   <- lt nP q
+    z   <- rt nP q
     _   <- inline nP
     w   <- weight
     _   <- inline nP
@@ -214,24 +213,21 @@ protag q = try $ do
 
 data PW = PW SourcePos DAST.Protag
 
-mt :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-mt nP b = turret "mt" b nP
+mt :: SourcePos -> [String] -> Parser DAST.Turret
+mt nP b = turret "mt" DAST.TM b nP
 
-lt :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-lt nP b = turret "lt" b nP
+lt :: SourcePos -> [String] -> Parser DAST.Turret
+lt nP b = turret "lt" DAST.TL b nP
 
-rt :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-rt nP b = turret "rt" b nP
+rt :: SourcePos -> [String] -> Parser DAST.Turret
+rt nP b = turret "rt" DAST.TR b nP
 
-turret :: String -> [String] -> SourcePos -> Parser (Maybe DAST.Turret)
-turret x b nP = try $ do
-  _ <- inline nP
+turret :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser DAST.Turret
+turret x handler b nP = try $ do
   reserved x
+  _ <- inline nP
   s <- shot b
-  case x of
-    "mt" -> return $ Just $DAST.TM (Just s)
-    "lt" -> return $ Just $ DAST.TL (Just s)
-    "rt" -> return $ Just $DAST.TR (Just s)
+  return $ handler s
 
 shot :: [String] -> Parser DAST.Shot
 shot b = try $ do
@@ -285,7 +281,7 @@ timeline x = try $ do
   _  <- indented sP
   nP <- getPosition
   if greaterIndent sP nP
-  then return $ Nothing
+  then return Nothing
   else do
     t <- timestamps x
     return $ Just $ DAST.Timeline t
@@ -321,14 +317,14 @@ duration = try $ do
   d <- optionMaybe float
   case d of
     Just x -> return $ Just $ DAST.Duration $ x
-    Nothing -> return $ Nothing
+    Nothing -> return Nothing
 
 -- adapted from: https://www.fpcomplete.com/school/to-infinity-and-beyond/pick-of-the-week/parsing-floats-with-parsec
 float :: Parser Float
 float = try $ do
   d <- fmap rd $ many1 digit <++> decimal
   spaces
-  return $ d
+  return d
     where rd       = read :: String -> Float
           decimal  = option "" $ char '.' <:> (many1 digit)
 
@@ -351,7 +347,7 @@ using a = try $ do
   s <- str
   spaces
   if elem s a
-  then return $ s
+  then return s
   else antagNotFoundError s
 
 lanes :: Parser DAST.Nat
@@ -365,25 +361,25 @@ readStr n = try $ do
   reserved n
   s <- str
   spaces
-  return $ s
+  return s
 
 readNat :: String -> Parser DAST.Nat
 readNat n = try $ do
   reserved n
   d <- digit'
   spaces
-  return $ d
+  return d
 
 readNatWithType :: (DAST.Nat -> a) -> String -> Parser a
 readNatWithType t n = try $ do
   reserved n
   d <- digit'
   spaces
-  return $ t $ d
+  return $ t d
 
 readStringWithType :: (String -> a) -> String -> Parser a
 readStringWithType t n = try $ do
   reserved n
   d <- str
   spaces
-  return $ t $ d
+  return $ t d

@@ -8,7 +8,7 @@ import DAST
 import Helpers
 import qualified Translation as T
 
---main :: IO ()
+main :: IO ()
 main = do
   c <- getLine
   e <- readFile c

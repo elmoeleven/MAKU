@@ -25,13 +25,13 @@ nm :: String -> JSName
 nm = jsName
 
 exstr :: String -> JSExpression
-exstr x = JSExpressionLiteral $ JSLiteralString $ str x
+exstr = JSExpressionLiteral . JSLiteralString . str
 
 str :: String -> JSString
 str = jsString
 
 var :: JSName -> JSExpression -> JSVarStatement
-var a b = JSVarStatement [JSVarDecl a (Just $ b)]
+var a b = JSVarStatement [JSVarDecl a (Just b)]
 
 new :: JSExpression -> [JSExpression] -> JSExpression
 new a b = JSExpressionNew a (invk b)
@@ -362,7 +362,7 @@ object :: [JSObjectField] -> JSExpression
 object = JSExpressionLiteral . JSLiteralObject . JSObjectLiteral
 
 field :: JSName -> JSExpression -> JSObjectField
-field a b = JSObjectField (Left $ a) b
+field a b = JSObjectField (Left a) b
 
 fieldWithObject :: String -> [(String, JSExpression)] -> JSObjectField
 fieldWithObject nameOfField parms =
@@ -388,10 +388,10 @@ invk :: [JSExpression] -> JSInvocation
 invk = JSInvocation
 
 invoke' :: [JSExpression] -> JSRValue
-invoke' a = JSRVInvoke $ singleton $ invk a
+invoke' = JSRVInvoke . singleton . invk
 
 nullInvk :: JSRValue
-nullInvk = invoke' $ [exnm ""]
+nullInvk = invoke' [exnm ""]
 
 function :: String -> [JSName] -> JSFunctionBody -> JSExpression
 function name parms body = JSExpressionLiteral $ JSLiteralFunction $ JSFunctionLiteral (Just $ nm name) parms body

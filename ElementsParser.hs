@@ -90,50 +90,42 @@ sscw = do
   w <- weight
   return $ DAST.SSCW sz shp clr w
 
-mt :: [String] -> Parser (Maybe DAST.Turret)
-mt b = turret "mt" b
+mt :: [String] -> Parser DAST.Turret
+mt b = turret "mt" DAST.TM b
 
-mt' :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-mt' nP b = turret' "mt" b nP
+mt' :: SourcePos -> [String] -> Parser DAST.Turret
+mt' nP b = turret' "mt" DAST.TM b nP
 
-lt' :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-lt' nP b = turret' "lt" b nP
+lt' :: SourcePos -> [String] -> Parser DAST.Turret
+lt' nP b = turret' "lt" DAST.TL b nP
 
-rt' :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
-rt' nP b = turret' "rt" b nP
+rt' :: SourcePos -> [String] -> Parser DAST.Turret
+rt' nP b = turret' "rt" DAST.TR b nP
 
-turret' :: String -> [String] -> SourcePos -> Parser (Maybe DAST.Turret)
-turret' x b nP = try $ do
+turret' :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser DAST.Turret
+turret' x handler b nP = try $ do
   _ <- inline nP
   reserved x
   s <- shot b
-  case x of
-    "mt" -> return $ Just $ DAST.TM s
-    "lt" -> return $ Just $ DAST.TL s
-    "rt" -> return $ Just $ DAST.TR s
+  return $ handler s
 
-lt :: [String] -> Parser (Maybe DAST.Turret)
-lt x = turret "lt" x
+lt :: [String] -> Parser (DAST.Turret)
+lt x = turret "lt" DAST.TL x
 
-rt :: [String] -> Parser (Maybe DAST.Turret)
-rt x = turret "rt" x
+rt :: [String] -> Parser (DAST.Turret)
+rt x = turret "rt" DAST.TR x
 
-lb :: [String] -> Parser (Maybe DAST.Turret)
-lb x = turret "lb" x
+lb :: [String] -> Parser (DAST.Turret)
+lb x = turret "lb" DAST.BL x
 
-rb :: [String] -> Parser (Maybe DAST.Turret)
-rb x = turret "rb" x
+rb :: [String] -> Parser (DAST.Turret)
+rb x = turret "rb" DAST.BR x
 
-turret :: String -> [String] -> Parser (Maybe DAST.Turret)
-turret x b = try $ do
+turret :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> Parser DAST.Turret
+turret x handler b = try $ do
   reserved x
   s <- shot b
-  case x of
-    "mt" -> return $ Just $ DAST.TM s
-    "lt" -> return $ Just $ DAST.TL s
-    "rt" -> return $ Just $ DAST.TR s
-    "lb" -> return $ Just $ DAST.BL s
-    "rb" -> return $ Just $ DAST.BR s
+  return $ handler s
 
 noShot :: Parser (Maybe DAST.Shot)
 noShot = try $ do
@@ -141,14 +133,14 @@ noShot = try $ do
   spaces
   return $ Nothing
 
-shot :: [String] -> Parser (Maybe DAST.Shot)
+shot :: [String] -> Parser DAST.Shot
 shot b = try $ do
   n <- between quote quote (many alphaNum)
   spaces
   c <- digit'
   spaces
   if elem n b
-  then return $ Just $ DAST.Shot n (DAST.ShotType c)
+  then return $ DAST.Shot n (DAST.ShotType c)
   else bulletNotFoundError n
 
 
@@ -204,8 +196,8 @@ traditional x = do
   _  <- indented sP
   nP <- getPosition
   a  <- mt' nP x
-  b  <- option Nothing (lt' nP x)
-  c  <- option Nothing (rt' nP x)
+  b  <- lt' nP x
+  c  <- rt' nP x
   spaces
   return $ DAST.Traditional a b c
 
