@@ -2,15 +2,16 @@ module GameParser where
 
 
 import Text.ParserCombinators.Parsec
-import qualified NewElementsParser as NEP
-import qualified NewLogicParser as NLP
-import NewDataTypes
+import qualified ElementsParser as NEP
+import qualified LogicParser as NLP
+import DAST
 import Helpers
 import qualified Translation as T
 
-main :: IO ()
+--main :: IO ()
 main = do
-  e <- readFile "test.maku"
+  c <- getLine
+  e <- readFile c
   case (parse parser "stdin" e) of
     Left  y -> putStrLn "Error: " >> print y
     Right (x:_)  -> putStrLn $ show (T.enit x)
@@ -19,7 +20,8 @@ main = do
 parser :: Parser [Game]
 parser = do
   spaces
-  many1 game
+  ls <- many1 game
+  return $ ls
 
 game :: Parser Game
 game = do

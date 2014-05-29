@@ -8,49 +8,49 @@ import Data.Maybe (fromMaybe)
 
 import qualified Text.Parsec.Prim as P
 
-import qualified NewDataTypes as DT
+import qualified DAST as DAST
 
 ----
 ---- helpers
 ----
 
-upgradeNames :: Maybe DT.Upgrades -> [String]
+upgradeNames :: Maybe DAST.Upgrades -> [String]
 upgradeNames Nothing = []
 upgradeNames (Just u) = s' ++ d' ++ b'
   where
-    s' = map DT.getShotUpgradeName $ DT.getShotUpgrades u
-    d' = map DT.getShieldName $ DT.getShieldUpgrades u
-    b' = map DT.getBombName $ DT.getBombUpgrades u
+    s' = map DAST.getShotUpgradeName $ DAST.getShotUpgrades u
+    d' = map DAST.getShieldName $ DAST.getShieldUpgrades u
+    b' = map DAST.getBombName $ DAST.getBombUpgrades u
 
-singleNames :: DT.NEList DT.Single -> [String]
-singleNames = map DT.getSingleName . toList
+singleNames :: DAST.NEList DAST.Single -> [String]
+singleNames = map DAST.getSingleName . toList
 
-groupNames :: DT.NEList DT.Group -> [String]
-groupNames =  map DT.getGroupName . toList
+groupNames :: DAST.NEList DAST.Group -> [String]
+groupNames =  map DAST.getGroupName . toList
 
-randomNames :: [DT.Random] -> [String]
-randomNames =  map DT.getRandomName
+randomNames :: [DAST.Random] -> [String]
+randomNames =  map DAST.getRandomName
 
-timelineNames :: [DT.Random] -> DT.NEList DT.Group -> DT.NEList DT.Single -> DT.Elements -> ([String], [String], [String], [String])
+timelineNames :: [DAST.Random] -> DAST.NEList DAST.Group -> DAST.NEList DAST.Single -> DAST.Elements -> ([String], [String], [String], [String])
 timelineNames r g s u = (r',g',s',u')
   where
     r' = randomNames r
     g' = groupNames g
     s' = singleNames s
-    u' = upgradeNames $ DT.getUpgrades u
+    u' = upgradeNames $ DAST.getUpgrades u
 
 -- quote definition
 quote :: Parser String
 quote = string "\""
 
-toList :: DT.NEList a -> [a]
-toList (DT.NEList x xs) = x : xs
+toList :: DAST.NEList a -> [a]
+toList (DAST.NEList x xs) = x : xs
 
-antagNames :: DT.Elements -> [String]
-antagNames = map DT.getAntagName . toList . DT.getAntags
+antagNames :: DAST.Elements -> [String]
+antagNames = map DAST.getAntagName . toList . DAST.getAntags
 
-bulletNames :: DT.Elements -> [String]
-bulletNames = map DT.getBulletName . DT.getBullets
+bulletNames :: DAST.Elements -> [String]
+bulletNames = map DAST.getBulletName . DAST.getBullets
 
 str :: Parser String
 str = try $ do
@@ -58,14 +58,14 @@ str = try $ do
   spaces
   return $ s
 
-natify :: String -> DT.Nat
-natify = DT.toNat . read
+natify :: String -> DAST.Nat
+natify = DAST.toNat . read
 
 readColor :: String -> Colour Double
 readColor color = fromMaybe (error $ "invalid color: " ++ color) $ readColourName color
 
-makeColor :: String -> DT.Colour
-makeColor = DT.Colour . sRGB24show . readColor
+makeColor :: String -> DAST.Colour
+makeColor = DAST.Colour . sRGB24show . readColor
 
 -- get line
 line :: Parser String
@@ -75,7 +75,7 @@ line = do
  return ln
 
 -- parse digits
-digit' :: Parser DT.Nat
+digit' :: Parser DAST.Nat
 digit' = do
   d <- many1 digit
   spaces

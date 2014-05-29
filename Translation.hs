@@ -2,7 +2,7 @@
 
 module Translation where
 
-import NewDataTypes
+import DAST
 
 --import DataTypes
 import qualified Pretty as P
@@ -10,7 +10,7 @@ import qualified Pretty as P
 -- System libraries
 import qualified Text.PrettyPrint.Leijen as L
 import Data.List
-import AST
+import JSAST
 
 bullets :: [Bullet] -> [JSExpression]
 bullets = map bullet
@@ -322,6 +322,7 @@ typ x
   s'
 
 upgrades :: Maybe Upgrades -> [Bullet] -> JSVarStatement
+upgrades Nothing _ = P.noUpgrades
 upgrades (Just x) b = P.upgrades s' d' b' l'
   where
     s' = P.shotUpgrades $ shots b (getShotUpgrades x)

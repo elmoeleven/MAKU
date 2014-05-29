@@ -4,7 +4,7 @@
 
 module Pretty where
 
-import AST
+import JSAST
 import NonEmptyList
 
 ------------------------
@@ -56,6 +56,9 @@ randoms r = var (nm "randoms") (array r)
 
 upgrades :: JSObjectField -> JSObjectField -> JSObjectField -> JSObjectField -> JSVarStatement
 upgrades s d b l = var (nm "upgrades") (object [s,d,b,l])
+
+noUpgrades :: JSVarStatement
+noUpgrades = var (nm "upgrades") (object [])
 
 level :: JSObjectField -> JSObjectField -> JSObjectField -> JSExpression
 level p t w = object [p,t,w]
