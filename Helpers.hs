@@ -9,26 +9,7 @@ import Data.Functor.Identity
 import Data.Maybe (fromMaybe)
 
 import qualified Text.Parsec.Prim as P
-
 import qualified DAST as DAST
-
---deff = emptyDef
---  {
---    reservedNames = [
---      "x",
---      "y",
---      "panX",
---      "panY",
---      "step",
---      "zigzag",
---      "spiral",
---      "wave",
---      "circular",
---      "lshaped",
---      "none"
---    ]
---  }
---reservedd = T.reserved $ T.makeTokenParser deff
 
 ----
 ---- helpers
