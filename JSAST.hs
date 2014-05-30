@@ -14,7 +14,7 @@ module JSAST (
   JSExpressionStatement(..), JSLValue(..), JSRValue(..), JSExpression(..),
   JSInvocation(..), JSRefinement(..),
   JSLiteral(..), JSObjectLiteral(..), JSObjectField(..), JSArrayLiteral(..),
-  JSFunctionLiteral(..), JSFunctionBody(..)
+  JSFunctionLiteral(..), JSFunctionBody(..), JSProgram(..)
 ) where
 
 import Text.PrettyPrint.Leijen
@@ -75,6 +75,7 @@ data JSObjectField  = JSObjectField (Either JSName JSString) JSExpression
 data JSArrayLiteral = JSArrayLiteral [JSExpression]
 data JSFunctionLiteral = JSFunctionLiteral (Maybe JSName) [JSName] JSFunctionBody
 data JSFunctionBody = JSFunctionBody [JSVarStatement] [JSStatement]
+data JSProgram = JSProgram [JSVarStatement] [JSStatement]
 
 instance Pretty JSString where
   pretty s = char '\'' <> text (unJSString s) <> char '\''
@@ -208,6 +209,10 @@ instance Pretty JSFunctionBody        where
     rbrace
 
 instance PrettyPrec JSFunctionBody -- default
+
+instance Pretty JSProgram where
+  pretty (JSProgram varStmts stmts) = vcat (map pretty varStmts ++ map pretty stmts)
+
 
 
 

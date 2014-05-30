@@ -1,12 +1,13 @@
 module GameParser where
 
-
+import System.Process
 import Text.ParserCombinators.Parsec
 import qualified ElementsParser as NEP
 import qualified LogicParser as NLP
 import DAST
 import Helpers
 import qualified Translation as T
+import qualified Data.ByteString.Lazy as B
 
 main :: IO ()
 main = do
@@ -14,8 +15,17 @@ main = do
   e <- readFile c
   case (parse parser "stdin" e) of
     Left  y -> putStrLn "Error: " >> print y
-    Right (x:_)  -> putStrLn $ show (T.enit x)
+    Right (x:_)  -> output x
     Right [] -> putStrLn "No Results"
+
+output :: Game -> IO()
+output x = do
+  contents <- readFile "engine.js"
+  writeFile "maku.js" (contents ++ "\n" ++ show (T.enit x))
+  runCommand "uglifyjs maku.js -o maku.min.js"
+  --runCommand "cp maku.min.js ~/Sites/brunch_gscale/app/assets/javascripts/"
+  putStrLn $ "maku.js generated!"
+  --putStrLn $ show (T.enit x)
 
 parser :: Parser [Game]
 parser = do

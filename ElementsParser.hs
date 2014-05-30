@@ -102,6 +102,19 @@ lt' nP b = turret' "lt" DAST.TL b nP
 rt' :: SourcePos -> [String] -> Parser DAST.Turret
 rt' nP b = turret' "rt" DAST.TR b nP
 
+opLt' :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
+opLt' nP b = optionalTurret "lt" DAST.TL b nP
+
+opRt' :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
+opRt' nP b = optionalTurret "rt" DAST.TR b nP
+
+optionalTurret :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser (Maybe DAST.Turret)
+optionalTurret x handler b nP = try $ do
+  _ <- inline nP
+  reserved x
+  s <- shot b
+  return $ Just $ handler s
+
 turret' :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser DAST.Turret
 turret' x handler b nP = try $ do
   _ <- inline nP
@@ -196,8 +209,8 @@ traditional x = do
   _  <- indented sP
   nP <- getPosition
   a  <- mt' nP x
-  b  <- lt' nP x
-  c  <- rt' nP x
+  b  <- option Nothing (opLt' nP x)
+  c  <- option Nothing (opRt' nP x)
   spaces
   return $ DAST.Traditional a b c
 

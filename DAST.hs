@@ -2,12 +2,14 @@ module DAST where
 
 data NEList a = NEList a [a] deriving (Show)
 
+-- Game data definition
 data Game = Game {
   getGrid :: Grid,
   getElements :: Elements,
   getLogic :: Logic
 } deriving (Show)
 
+-- Logic data definition
 data Logic = Logic {
   getRandoms :: [Random],
   getSingles :: NEList Single,
@@ -15,6 +17,7 @@ data Logic = Logic {
   getLevels :: NEList Level
 } deriving (Show)
 
+-- Grid data definition.
 data Grid = Grid {
   getGridCount :: Nat
 } deriving (Show)
@@ -86,8 +89,8 @@ data Antag = Antag {
 
 data TurretType = Traditional {
   getTMainTurret  :: Turret,
-  getTLeftTurret  :: Turret,
-  getTRightTurret  :: Turret
+  getTLeftTurret  :: Maybe Turret,
+  getTRightTurret  :: Maybe Turret
 } | Double {
   getDLeftTurret :: Turret,
   getDRightTurret :: Turret

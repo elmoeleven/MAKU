@@ -16,9 +16,6 @@ import JSAST
 -- FIXME: Code used 0/1 with no good reason.
 data Two = Zero | One
 
-bullets :: [Bullet] -> [JSExpression]
-bullets = map bullet
-
 groups :: [Group] -> JSVarStatement
 groups = P.groups . (map group')
 
@@ -31,14 +28,8 @@ randoms = P.randoms . (map random)
 levels :: [Bullet] -> [Level] -> JSVarStatement
 levels b x = P.levels $ map (level b) x
 
-bullet :: Bullet -> JSExpression
-bullet x = P.bullet h w
-  where
-    h = ssc $ getBulletSSCW x
-    w = wght $ getBulletSSCW x
-
-ssc :: SSCW -> JSExpression
-ssc x =
+ssc :: Two -> SSCW -> JSExpression
+ssc y x =
   case shp x of
     Triangle -> P.triangle n c
     Square -> P.square n c
@@ -47,7 +38,7 @@ ssc x =
     Circle -> P.circle n c
   where
     c  = clr x
-    n  = size $ getSize x
+    n  = size y (getSize x)
 
 shp :: SSCW -> Shape
 shp = getShape
@@ -61,10 +52,14 @@ clr' = unClr . getProtagColour
 wght :: SSCW -> Double
 wght = unNat . getWeight
 
-size :: Num a => Size -> a
-size Small = 25
-size Medium = 35
-size Large = 45
+size :: Num a => Two -> Size -> a
+size Zero Small = 25
+size Zero Medium = 35
+size Zero Large = 45
+
+size One Small = 3
+size One Medium = 4
+size One Large = 5
 
 elements' :: Elements -> ([Bullet], JSVarStatement, JSVarStatement)
 elements' x = (b, a', u')
@@ -180,11 +175,15 @@ antag b x = P.antag n w' h m p t r' 1000.0 s'
     m  = turretType (getAntagTurretType x) One b
 
 turretType :: TurretType -> Two -> [Bullet] -> JSExpression
-turretType (Traditional x y z) i b = P.traditional m l' r'
+turretType (Traditional x (Just y) (Just z)) i b = P.traditional m l' r'
   where
     m  = shot (turret x) i b
     l' = shot (turret y) i b
     r' = shot (turret z) i b
+
+turretType (Traditional x Nothing Nothing) i b = P.traditional m P.noString P.noString
+  where
+    m  = shot (turret x) i b
 
 turretType (Double x y) i b = P.double l' r'
   where
@@ -202,13 +201,13 @@ turretType (Quad w x y z) i b = P.quad a' b' c d'
 msscw :: MSSCW -> ((JSExpression, Double), (JSExpression, JSExpression, JSExpression))
 msscw x = (s',m)
   where
-    s' = sscw $ getSSCW x
+    s' = sscw Zero (getSSCW x)
     m  = movement $ getMovement x
 
-sscw :: SSCW -> (JSExpression, Double)
-sscw x = (s',w')
+sscw :: Two -> SSCW -> (JSExpression, Double)
+sscw y x = (s',w')
   where
-    s' = ssc x
+    s' = ssc y x
     w' = wght x
 
 movement :: Movement -> (JSExpression, JSExpression, JSExpression)
@@ -281,7 +280,7 @@ bulletShape :: Shot -> [Bullet] -> (JSExpression, Double)
 bulletShape x b = handleBullet (checkBulletExists (getBullet x) b) b
 
 handleBullet :: Maybe Int -> [Bullet] -> (JSExpression, Double)
-handleBullet (Just i) b = let y = getBulletSSCW $ b !! i in sscw y
+handleBullet (Just i) b = let y = getBulletSSCW $ b !! i in sscw One y
 handleBullet Nothing _ = (P.noString, 0.0)
 
 -- need to have a case for Nothing but what?

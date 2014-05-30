@@ -201,8 +201,9 @@ protag q = try $ do
     clr <- color
     _   <- inline nP         -- preserve indent
     x   <- mt nP q
-    y   <- lt nP q
-    z   <- rt nP q
+    spaces
+    y   <- option Nothing (lt nP q)
+    z   <- option Nothing (rt nP q)
     _   <- inline nP
     w   <- weight
     _   <- inline nP
@@ -216,18 +217,26 @@ data PW = PW SourcePos DAST.Protag
 mt :: SourcePos -> [String] -> Parser DAST.Turret
 mt nP b = turret "mt" DAST.TM b nP
 
-lt :: SourcePos -> [String] -> Parser DAST.Turret
-lt nP b = turret "lt" DAST.TL b nP
+lt :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
+lt nP b = optionalTurret "lt" DAST.TL b nP
 
-rt :: SourcePos -> [String] -> Parser DAST.Turret
-rt nP b = turret "rt" DAST.TR b nP
+rt :: SourcePos -> [String] -> Parser (Maybe DAST.Turret)
+rt nP b = optionalTurret "rt" DAST.TR b nP
+
+optionalTurret :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser (Maybe DAST.Turret)
+optionalTurret x handler b nP = try $ do
+  _ <- inline nP
+  reserved x
+  s <- shot b
+  return $ Just $ handler s
 
 turret :: String -> (DAST.Shot -> DAST.Turret) -> [String] -> SourcePos -> Parser DAST.Turret
 turret x handler b nP = try $ do
-  reserved x
   _ <- inline nP
+  reserved x
   s <- shot b
   return $ handler s
+
 
 shot :: [String] -> Parser DAST.Shot
 shot b = try $ do

@@ -396,28 +396,39 @@ nullInvk = invoke' [exnm ""]
 function :: String -> [JSName] -> JSFunctionBody -> JSExpression
 function name parms body = JSExpressionLiteral $ JSLiteralFunction $ JSFunctionLiteral (Just $ nm name) parms body
 
-enit :: JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSStatement -> JSExpression
-enit l a r s g u d = function "init" []
-  (
-    functionBody
-    [
-      l,
-      a,
-      r,
-      s,
-      g,
-      u
-    ]
-    [
-      statement (nm "Environment") (prop "init") (invoke' []),
-      d,
-      statement (nm "Antagonists") (prop "init") (invoke' [exnm "antags"]),
-      statement (nm "Randoms") (prop "init") (invoke' [exnm "randoms"]),
-      statement (nm "Singles") (prop "init") (invoke' [exnm "singles"]),
-      statement (nm "Groups") (prop "init") (invoke' [exnm "groups"]),
-      statement (nm "Upgrades") (prop "init") (invoke' [exnm "upgrades"]),
-      statement (nm "Levels") (prop "init") (invoke' [exnm "lvls"]),
-      statement (nm "Bullets") (prop "init") (invoke' []),
-      statement (nm "Environment") (prop "begin") (invoke' [true])
-    ]
-  )
+enit :: JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSVarStatement -> JSStatement -> JSProgram
+enit l a r s g u d =
+  program
+  [
+    var (nm "init") (function "" []
+      (
+        functionBody
+        [
+          l,
+          a,
+          r,
+          s,
+          g,
+          u
+        ]
+        [
+          statement (nm "Environment") (prop "init") (invoke' []),
+          d,
+          statement (nm "Antagonists") (prop "init") (invoke' [exnm "antags"]),
+          statement (nm "Randoms") (prop "init") (invoke' [exnm "randoms"]),
+          statement (nm "Singles") (prop "init") (invoke' [exnm "singles"]),
+          statement (nm "Groups") (prop "init") (invoke' [exnm "groups"]),
+          statement (nm "Upgrades") (prop "init") (invoke' [exnm "upgrades"]),
+          statement (nm "Levels") (prop "init") (invoke' [exnm "lvls"]),
+          statement (nm "Bullets") (prop "init") (invoke' []),
+          statement (nm "Environment") (prop "begin") (invoke' [true])
+        ]
+      )
+    )
+  ]
+  [
+    JSStatementExpression $ JSESApply (singleton $ JSLValue (nm "init") []) (JSRVInvoke (singleton $ JSInvocation []))
+  ]
+
+program :: [JSVarStatement] -> [JSStatement] -> JSProgram
+program = JSProgram
