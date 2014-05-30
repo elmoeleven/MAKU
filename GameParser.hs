@@ -9,10 +9,9 @@ import Helpers
 import qualified Translation as T
 import qualified Data.ByteString.Lazy as B
 
-main :: IO ()
-main = do
-  c <- getLine
-  e <- readFile c
+main :: String -> IO ()
+main f = do
+  e <- readFile f
   case (parse parser "stdin" e) of
     Left  y -> putStrLn "Error: " >> print y
     Right (x:_)  -> output x
