@@ -1,12 +1,9 @@
 module LogicParser where
 
 import Helpers
+import Language
 
 import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Language
-import Data.Functor.Identity
-import qualified Text.Parsec.Prim as P
-import qualified Text.ParserCombinators.Parsec.Token as T
 import qualified DAST as DAST
 import Control.Applicative hiding ((<|>), many)
 
@@ -15,50 +12,6 @@ import Control.Applicative hiding ((<|>), many)
 
 (<:>) :: Applicative f => f a -> f [a] -> f [a]
 (<:>) a b = (:) <$> a <*> b
-
-
-def :: LanguageDef g
-def = emptyDef {
-  reservedNames = [
-    "logic",
-    "base",
-    "protag",
-    "weight",
-    "bombCount",
-    "level",
-    "group",
-    "shield",
-    "shot",
-    "name",
-    "using",
-    "lanes",
-    "bomb",
-    "enterFrom",
-    "timeline",
-    "timestamp",
-    "count",
-    "score",
-    "time",
-    "boss",
-    "progression",
-    "mt",
-    "lt",
-    "rt",
-    "grid",
-    "lives",
-    "iP",
-    "single",
-    "time"
-  ]
-}
-
--- lexer setup
-makuLexer :: T.TokenParser s
-makuLexer     = T.makeTokenParser def
-
-reserved :: String -> P.ParsecT String u Data.Functor.Identity.Identity ()
-reserved      = T.reserved makuLexer
-
 
 logic :: [String] -> [String] -> Double -> DAST.Elements -> Parser DAST.Logic
 logic b a d u = do

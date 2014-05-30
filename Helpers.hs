@@ -1,6 +1,10 @@
 module Helpers where
 
+
+import Language
 import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec.Language
+import qualified Text.ParserCombinators.Parsec.Token as T
 import Data.Colour.SRGB
 import Data.Colour.Names
 import Data.Functor.Identity
@@ -9,6 +13,24 @@ import Data.Maybe (fromMaybe)
 import qualified Text.Parsec.Prim as P
 
 import qualified DAST as DAST
+
+--deff = emptyDef
+--  {
+--    reservedNames = [
+--      "x",
+--      "y",
+--      "panX",
+--      "panY",
+--      "step",
+--      "zigzag",
+--      "spiral",
+--      "wave",
+--      "circular",
+--      "lshaped",
+--      "none"
+--    ]
+--  }
+--reservedd = T.reserved $ T.makeTokenParser deff
 
 ----
 ---- helpers
@@ -111,7 +133,7 @@ indented p = (eof >> return []) <|> do
 
 -- options
 options :: [(String,a)] -> Parser a
-options l = choice $ map (\(s,r) -> do { _ <- string s; return r }) l
+options l = choice $ map (\(s,r) -> do { _ <- reserved s; return r }) l
 
 -- check if columns are inline
 inline :: SourcePos -> P.ParsecT [tok] u Identity [a]

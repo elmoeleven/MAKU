@@ -1,52 +1,10 @@
 module ElementsParser where
 
 import Helpers
+import Language
 
 import Text.ParserCombinators.Parsec
-import Text.ParserCombinators.Parsec.Language
-import Data.Functor.Identity
-import qualified Text.Parsec.Prim as P
-import qualified Text.ParserCombinators.Parsec.Token as T
 import qualified DAST as DAST
-
--- language definition
-def :: LanguageDef g
-def = emptyDef
-  {
-    reservedNames   = [
-      "elements",
-      "bullet",
-      "protag",
-      "name",
-      "movement",
-      "rotation",
-      "direction",
-      "speed",
-      "size",
-      "shape",
-      "color",
-      "shot",
-      "antag",
-      "pattern",
-      "track",
-      "weight",
-      "upgrades",
-      "shield",
-      "bomb"
-    ]
-  }
-
--- lexer setup
-makuLexer :: T.TokenParser s
-makuLexer     = T.makeTokenParser def
-
-reserved :: String -> P.ParsecT String u Data.Functor.Identity.Identity ()
-reserved = T.reserved makuLexer
-
-
---
--- helper parsers
---
 
 -- elements parser
 elements :: Parser DAST.Elements

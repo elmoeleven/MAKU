@@ -9,8 +9,8 @@ import Helpers
 import qualified Translation as T
 import qualified Data.ByteString.Lazy as B
 
-main :: String -> IO ()
-main f = do
+gen :: String -> IO ()
+gen f = do
   e <- readFile f
   case (parse parser "stdin" e) of
     Left  y -> putStrLn "Error: " >> print y
@@ -23,6 +23,7 @@ output x = do
   writeFile "maku.js" (contents ++ "\n" ++ show (T.enit x))
   runCommand "uglifyjs maku.js -o maku.min.js"
   putStrLn $ "maku.js generated!"
+  --putStrLn $ show (T.enit x)
 
 parser :: Parser [Game]
 parser = do
