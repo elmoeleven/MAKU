@@ -283,9 +283,6 @@ handleBullet :: Maybe Int -> [Bullet] -> (JSExpression, Double)
 handleBullet (Just i) b = let y = getBulletSSCW $ b !! i in sscw One y
 handleBullet Nothing _ = (P.noString, 0.0)
 
--- need to have a case for Nothing but what?
---something Nothing =
-
 typ :: ShotType -> Double
 typ (ShotType t) = fromNat t
 
