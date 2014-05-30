@@ -181,6 +181,16 @@ turretType (Traditional x (Just y) (Just z)) i b = P.traditional m l' r'
     l' = shot (turret y) i b
     r' = shot (turret z) i b
 
+turretType (Traditional x (Just y) Nothing) i b = P.traditional m l' P.noString
+  where
+    m  = shot (turret x) i b
+    l' = shot (turret y) i b
+
+turretType (Traditional x Nothing (Just z)) i b = P.traditional m P.noString r'
+  where
+    m  = shot (turret x) i b
+    r' = shot (turret z) i b
+
 turretType (Traditional x Nothing Nothing) i b = P.traditional m P.noString P.noString
   where
     m  = shot (turret x) i b

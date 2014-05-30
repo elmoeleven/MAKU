@@ -7,7 +7,6 @@ import qualified LogicParser as NLP
 import DAST
 import Helpers
 import qualified Translation as T
-import qualified Data.ByteString.Lazy as B
 
 gen :: String -> IO ()
 gen f = do
@@ -21,7 +20,7 @@ output :: Game -> IO()
 output x = do
   contents <- readFile "engine.js"
   writeFile "maku.js" (contents ++ "\n" ++ show (T.enit x))
-  runCommand "uglifyjs maku.js -o maku.min.js"
+  _ <- runCommand "uglifyjs maku.js -o maku.min.js"
   putStrLn $ "maku.js generated!"
   --putStrLn $ show (T.enit x)
 
