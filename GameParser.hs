@@ -23,9 +23,7 @@ output x = do
   contents <- readFile "engine.js"
   writeFile "maku.js" (contents ++ "\n" ++ show (T.enit x))
   runCommand "uglifyjs maku.js -o maku.min.js"
-  --runCommand "cp maku.min.js ~/Sites/brunch_gscale/app/assets/javascripts/"
   putStrLn $ "maku.js generated!"
-  --putStrLn $ show (T.enit x)
 
 parser :: Parser [Game]
 parser = do
