@@ -74,7 +74,7 @@ logic' x b = (l', s', g', r')
   where
     r' = randoms $ getRandoms x
     s' = singles $ toList $ getSingles x
-    g' = groups $ toList $ getGroups x
+    g' = groups $ getGroups x
     l' = levels b (toList $ getLevels x)
 
 enit :: Game -> L.Doc
@@ -228,8 +228,10 @@ movement x = (p,t,r')
     r' = rotation $ getRotation x
 
 pattern :: Maybe MovementPattern -> JSExpression
-pattern (Just X) = P.horizontal
-pattern (Just Y) = P.vertical
+pattern (Just LR) = P.lR
+pattern (Just RL) = P.rL
+pattern (Just TB) = P.tB
+pattern (Just BT) = P.bT
 pattern (Just PanX) = P.panX
 pattern (Just PanY) = P.panY
 pattern (Just Step) = P.step

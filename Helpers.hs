@@ -26,13 +26,13 @@ upgradeNames (Just u) = s' ++ d' ++ b'
 singleNames :: DAST.NEList DAST.Single -> [String]
 singleNames = map DAST.getSingleName . toList
 
-groupNames :: DAST.NEList DAST.Group -> [String]
-groupNames =  map DAST.getGroupName . toList
+groupNames :: [DAST.Group] -> [String]
+groupNames =  map DAST.getGroupName
 
 randomNames :: [DAST.Random] -> [String]
 randomNames =  map DAST.getRandomName
 
-timelineNames :: [DAST.Random] -> DAST.NEList DAST.Group -> DAST.NEList DAST.Single -> DAST.Elements -> ([String], [String], [String], [String])
+timelineNames :: [DAST.Random] -> [DAST.Group] -> DAST.NEList DAST.Single -> DAST.Elements -> ([String], [String], [String], [String])
 timelineNames r g s u = (r',g',s',u')
   where
     r' = randomNames r

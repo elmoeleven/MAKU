@@ -118,11 +118,11 @@ iP d = try $ do
   then ipInvalidError (show $ DAST.unNat r) (show $ DAST.unNat c)
   else return $ DAST.IP r c
 
-groups :: [String] -> Double -> Parser (DAST.NEList DAST.Group)
+groups :: [String] -> Double -> Parser [DAST.Group]
 groups a d = try $ do
-  (g:gs) <- many $ group a d
+  g <- many $ group a d
   spaces
-  return $ DAST.NEList g gs
+  return $ g
 
 group :: [String] -> Double -> Parser DAST.Group
 group a d = try $ do

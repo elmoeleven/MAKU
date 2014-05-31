@@ -300,11 +300,17 @@ pentagon r color = paramInvk "Pentagon" [n r, exstr color]
 rectangle :: Double -> Double -> String -> JSExpression
 rectangle h w color  = paramInvk "Rectangle" [n h, n w, exstr color]
 
-vertical :: JSExpression
-vertical = exnm "Vertical"
+lR :: JSExpression
+lR = exnm "LeftRight"
 
-horizontal :: JSExpression
-horizontal = exnm "Horizontal"
+rL :: JSExpression
+rL = exnm "RightLeft"
+
+tB :: JSExpression
+tB = exnm "TopBottom"
+
+bT :: JSExpression
+bT = exnm "BottomTop"
 
 panX :: JSExpression
 panX = exnm "PanHorizontal"

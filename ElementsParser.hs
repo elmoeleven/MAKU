@@ -327,8 +327,10 @@ pattern :: Parser (Maybe DAST.MovementPattern)
 pattern = try $ do
   reserved "pattern"
   p <- options [
-    ("x", Just $ DAST.X),
-    ("y", Just $ DAST.Y),
+    ("lr", Just $ DAST.LR),
+    ("rl", Just $ DAST.RL),
+    ("tb", Just $ DAST.TB),
+    ("bt", Just $ DAST.BT),
     ("panX", Just $ DAST.PanX),
     ("panY", Just $ DAST.PanY),
     ("step", Just $ DAST.Step),

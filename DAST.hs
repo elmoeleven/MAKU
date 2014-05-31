@@ -13,7 +13,7 @@ data Game = Game {
 data Logic = Logic {
   getRandoms :: [Random],
   getSingles :: NEList Single,
-  getGroups :: NEList Group,
+  getGroups :: [Group],
   getLevels :: NEList Level
 } deriving (Show)
 
@@ -169,8 +169,10 @@ data Movement = Movement {
 data Side = LeftSide | RightSide | TopSide | BottomSide deriving (Show)
 
 data MovementPattern
-  = X
-  | Y
+  = LR
+  | RL
+  | TB
+  | BT
   | PanY
   | PanX
   | Step
